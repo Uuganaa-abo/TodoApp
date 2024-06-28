@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <section
+      class="container column is-half is-offset-one-quarter has-background-primary-00"
+    >
+      <div class="container column is-half is-offset-one-quarter is-small">
+        <div class="notification is-primary is-flex is-justify-content-space-between">
+          <strong>TO DO LIST</strong>
+            <div id="total" class="button is-rounded is-primary mx-auto mgb-small"></div>
+        </div>
+      </div>
+      <div id="tasks" class="is-half"></div>
+
+      <div id="control" class="mt-6">
+        <input
+          id="description"
+          class="description column is-half is-offset-one-quarter"
+          type="text"
+          placeholder="To do ..."
+        />
+      </div>
+
+      <div class="buttons">
+        <button
+          onclick="render();addTask();"
+          class="button is-primary is-rounded mx-auto mt-1"
+        >
+          ADD TASK
+        </button>
+        <!-- <button id="saveButton" class="button is-info is-small is-ligth" onclick="">Save</button> -->
+      </div>
+    </section>
+
+    <script>
+      const tasks = document.getElementById("tasks");
+      tasks.innerHTML = "";
+      // const object = ;
+      const storage = localStorage.getItem("list");
+      const deledTask =  JSON.parse(storage) || [];
+
+      function addTask() {
+        const control = document.getElementById("description").value;
+        const object = {name: control, status: ''}
+        deledTask.push(object);
+        render();
+      }
+      function check(i){
+        if(deledTask[i].status == ""){
+          deledTask[i].status = "done";
+        }else{
+          deledTask[i].status = "";
+        }
+        render();
+      }
+
+      function deleteTask(position) {
+        if (confirm("Are u sure?")) {
+          deledTask.splice(position, 1);
+          render();
+        }
+      }
+
+      function editTask(position) {
+        const selectedItem = deledTask[position].name;
+        console.log("selectedItem", selectedItem);
+        const newValue = prompt("Edit task", selectedItem);
+        if (newValue !== null) {
+          deledTask[position].name = newValue;
+        }
+        render();
+      }
+
+      function render() { 
+        let deledTaskHtml = "";
+        for (let i = 0; i < deledTask.length; i++) {
+          const oneTask = `
+                   <div class="content">
+                    <div class="content-container">
+                      <div class="ToDo-Text is-flex is-align-items-center is-justify-content-space-between has-background-primary-10 has-text-primary-10-invert">
+                        <div class="todo-text is-flex is-justify-content-space-between">
+                         
+                         <input onclick="check(${i})" type="checkbox" class="checkbox" ${deledTask[i].status === "done" ? "checked" : ""} />
+                         ${deledTask[i].status === "done" ? `<s class="ml-1 has-text-weight-bold is-italic">${deledTask[i].name}</s>` : `<p class="ml-1 has-text-weight-bold is-italic">${deledTask[i].name}</p>`}
+                         </div>
+                           <div class="buttons">
+                             <button class="button is-small is-danger is-outlined" onclick="deleteTask(${i});">Delete</button>
+                             <button class="button is-small is-nfo is-ligth" onclick="editTask(${i});">Edit</button>
+                         </div>
+                       </div>
+                     </div>
+                    </div>    
+          `;
+          deledTaskHtml += oneTask;
+        }
+        document.getElementById("tasks").innerHTML = deledTaskHtml;
+        localStorage.setItem("list",JSON.stringify(deledTask));
+     
+       let j = 0;
+       for ( let i=0; i < deledTask.length; i++){
+        if (deledTask[i].status == "done"){
+          j++;
+          
+       }
+      }
+        document.getElementById("total").innerText = `${j}/${deledTask.length}`
+        
+    }
+      render();
+    </script>
+  </body>
+</html>
